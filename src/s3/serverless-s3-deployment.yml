@@ -1,0 +1,20 @@
+service: swam-s3-deployment-bucket
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: ${opt:region, self:custom.defaultRegion}
+  profile: ${self:custom.otherfile.environment.${self:provider.stage}.profile}
+
+custom:
+  defaultStage: dev
+  defaultRegion: ap-northeast-1
+  bucketName: ${self:custom.otherfile.environment.${self:provider.stage}.deploymentBucketName}
+  otherfile:
+    environment:
+      dev: ${file(./../../conf/dev.yml)}
+
+resources:
+  - ${file(./s3-deployment.yml)}

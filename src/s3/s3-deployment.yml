@@ -1,0 +1,16 @@
+Resources:
+  SwamS3DeploymentBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.bucketName}
+      AccessControl: Private
+      BucketEncryption: 
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: True
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
