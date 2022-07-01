@@ -7,6 +7,8 @@ provider:
   stage: ${opt:stage, self:custom.defaultStage}
   region: ${opt:region, self:custom.defaultRegion}
   profile: ${self:custom.otherfile.environment.${self:provider.stage}.profile}
+  deploymentBucket:
+    name: ${self:custom.otherfile.environment.${self:provider.stage}.deploymentBucketName}-${self:provider.stage}
 
 custom:
   defaultStage: dev
