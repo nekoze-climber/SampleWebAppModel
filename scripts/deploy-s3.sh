@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -gt 2 ] || [ $# -eq 1 ];then
-    echo "Usage: ./scripts/deploy-s3.sh [stage name (default: dev)] [aws region (default: ap-northeast-1)] ";
+    echo "Usage: ./deploy-s3.sh [stage name (default: dev)] [aws region (default: ap-northeast-1)] ";
     exit 2
 fi
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -gt 2 ] || [ $# -eq 1 ];then
-    echo "Usage: ./scripts/deploy.sh [stage name (default: dev)] [aws region (default: ap-northeast-1)] ";
+    echo "Usage: ./deploy.sh [stage name (default: dev)] [aws region (default: ap-northeast-1)] ";
     exit 2
 fi
 
@@ -29,8 +29,8 @@ read input
 if [ "$input" = "y" ] || [ "$input" = "yes" ];then
     echo "Start Deployment"
 
-    cd /src/s3
-    serverless deploy --stage ${STAGE} --region ${AWS_REGION}
+    cd ../src/s3
+    serverless deploy --stage ${STAGE} --region ${AWS_REGION} --config serverless-s3-ui.yml
 
 else
     echo "Finish without doing anything"

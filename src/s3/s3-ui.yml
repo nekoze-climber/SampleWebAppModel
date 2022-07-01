@@ -1,5 +1,5 @@
 Resources:
-  SwamS3DeploymentBucket:
+  SwamS3UiBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: ${self:custom.bucketName}-${self:provider.stage}
