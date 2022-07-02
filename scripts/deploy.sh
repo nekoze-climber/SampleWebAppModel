@@ -32,6 +32,9 @@ if [ "$input" = "y" ] || [ "$input" = "yes" ];then
     cd ../src/s3
     serverless deploy --stage ${STAGE} --region ${AWS_REGION} --config serverless-s3-ui.yml
 
+    cd ../../
+    serverless deploy --stage ${STAGE} --region ${AWS_REGION}
+
 else
     echo "Finish without doing anything"
 fi

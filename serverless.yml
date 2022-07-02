@@ -1,0 +1,63 @@
+service: swam-lambda
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: ${opt:region, self:custom.defaultRegion}
+  profile: ${self:custom.otherfile.environment.${self:provider.stage}.profile}
+  deploymentBucket:
+    name: ${self:custom.otherfile.environment.${self:provider.stage}.deploymentBucketName}-${self:provider.stage}
+  iam:
+    role:
+      managedPolicies:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+
+custom:
+  defaultStage: dev
+  defaultRegion: ap-northeast-1
+  baseApiPath: /${self:provider.stage}/v1/api
+  otherfile:
+    environment:
+      dev: ${file(./conf/dev.yml)}
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules:
+      packagePath: ./package.json
+      forceExclude:
+        - aws-sdk
+
+package:
+  # include:
+  exclude:
+    - conf
+    - node_modules
+    - scripts
+    - src/**
+    - .eslintignore.json
+    - .eslintrc.json
+    - .gitignore.json
+    - .prettierrc
+    - jest.config.js
+    - LICENSE
+    - README.md
+    - package.json
+    - package-lock.json
+    - tsconfig.json
+    - tsconfig.path.json
+    - webpack.config.json
+  individually: true
+plugins:
+  - serverless-webpack
+
+functions:
+  sample:
+    handler: src/lambda/index.handler
+    name: sample-web-app-model-lambda-${self:provider.stage}
+    description: sample-web-app-model-lambda
+    events:
+      - http:
+          path: ${self:custom.baseApiPath}/sample
+          method: get
