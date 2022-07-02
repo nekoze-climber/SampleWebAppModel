@@ -1,0 +1,135 @@
+Resources:
+  SwamUiCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        DefaultTTL: 0
+        MaxTTL: 0
+        MinTTL: 0
+        Name: swam-ui-cache-policy
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          EnableAcceptEncodingGzip: false
+          EnableAcceptEncodingBrotli: false
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+  SwamUiOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        CookiesConfig:
+          CookieBehavior: none
+        HeadersConfig:
+          HeaderBehavior: none
+        Name: swam-ui-origin-request-policy
+        QueryStringsConfig:
+          QueryStringBehavior: none
+    DependsOn: SwamUiCachePolicy
+  SwamOai:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: OAI of Swam.
+    DependsOn: SwamUiOriginRequestPolicy
+  SwamApiCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        DefaultTTL: 0
+        MaxTTL: 0
+        MinTTL: 0
+        Name: swam-api-cache-policy
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          EnableAcceptEncodingGzip: false
+          EnableAcceptEncodingBrotli: false
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+    DependsOn: SwamOai
+  SwamApiOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        CookiesConfig:
+          CookieBehavior: none
+        HeadersConfig:
+          HeaderBehavior: none
+        Name: swam-api-origin-request-policy
+        QueryStringsConfig:
+          QueryStringBehavior: none
+    DependsOn: SwamApiCachePolicy
+  SwamUiDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - Id: SwamUi
+            DomainName: ${self:custom.uiDomein}
+            S3OriginConfig:
+              OriginAccessIdentity:
+                "Fn::Join":
+                  - ""
+                  - - origin-access-identity/cloudfront/
+                    - Ref: SwamOai
+          - Id: SwamApi
+            DomainName: ${self:custom.apiDomein}
+            CustomOriginConfig:
+              HTTPPort: "80"
+              HTTPSPort: "443"
+              OriginProtocolPolicy: https-only
+              OriginKeepaliveTimeout: 30
+              OriginReadTimeout: 30
+              OriginSSLProtocols:
+                - TLSv1.2
+        Comment: Distribution of Swam Client and API.
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          CachePolicyId:
+            Ref: SwamUiCachePolicy
+          Compress: false
+          OriginRequestPolicyId:
+            Ref: SwamUiOriginRequestPolicy
+          TargetOriginId: SwamUi
+          ViewerProtocolPolicy: redirect-to-https
+        CacheBehaviors:
+          - AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - PATCH
+              - POST
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+            CachePolicyId:
+              Ref: SwamApiCachePolicy
+            Compress: false
+            OriginRequestPolicyId:
+              Ref: SwamApiOriginRequestPolicy
+            PathPattern: /${self:provider.stage}/swam/*
+            TargetOriginId: SwamApi
+            ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: false
+        # Logging:
+        #   Bucket: Ui-log-dev.s3.ap-northeast-1.amazonaws.com
+        #   IncludeCookies: false
+        #   Prefix: cloudfront
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true

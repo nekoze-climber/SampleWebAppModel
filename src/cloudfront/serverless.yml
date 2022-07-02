@@ -1,0 +1,23 @@
+service: swam-cloudfront
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: us-east-1
+  profile: ${self:custom.otherfile.environment.${self:provider.stage}.profile}
+
+custom:
+  defaultStage: dev
+  uiRegion: ap-northeast-1
+  apiRegion: ap-northeast-1
+  uiBucketName: ${self:custom.otherfile.environment.${self:provider.stage}.uiBucketName}
+  uiDomein: ${self:custom.uiBucketName}-${self:provider.stage}.s3.${self:custom.uiRegion}.amazonaws.com
+  apiDomein: ${cf(${self:custom.apiRegion}):swam-lambda-${self:provider.stage}.apiGatewayRestApiId}.execute-api.${self:custom.apiRegion}.amazonaws.com
+  otherfile:
+    environment:
+      dev: ${file(./../../conf/dev.yml)}
+
+resources:
+  - ${file(./cloudfront.yml)}

@@ -18,7 +18,7 @@ provider:
 custom:
   defaultStage: dev
   defaultRegion: ap-northeast-1
-  baseApiPath: /${self:provider.stage}/v1/api
+  baseApiPath: /swam/v1/api
   otherfile:
     environment:
       dev: ${file(./conf/dev.yml)}
@@ -61,3 +61,17 @@ functions:
       - http:
           path: ${self:custom.baseApiPath}/sample
           method: get
+
+resources:
+  Outputs:
+    apiGatewayRestApiId:
+      Value:
+        Ref: ApiGatewayRestApi
+      Export:
+        Name: ${self:service}-restApiId-${self:provider.stage}
+    apiGatewayRestApiRootResourceId:
+      Value:
+        'Fn::GetAtt': [ApiGatewayRestApi, RootResourceId]
+      Export:
+        Name: ${self:service}-rootResourceId-${self:provider.stage}
+  

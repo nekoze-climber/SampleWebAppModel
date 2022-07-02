@@ -30,8 +30,16 @@ read input
 
 if [ "$input" = "y" ] || [ "$input" = "yes" ];then
     echo "Start Remove"
-    aws s3 rm s3://${BUCKET_NAME} --recursive    
-    cd ../src/s3
+
+    cd ../src/cloudfront
+    serverless remove --stage ${STAGE}
+
+    cd ../../
+    serverless remove --stage ${STAGE} --region ${AWS_REGION}
+
+    aws s3 rm s3://${BUCKET_NAME} --recursive
+
+    cd src/s3
     serverless remove --stage ${STAGE} --region ${AWS_REGION} --config serverless-s3-ui.yml
 
 else

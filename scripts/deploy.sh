@@ -35,6 +35,9 @@ if [ "$input" = "y" ] || [ "$input" = "yes" ];then
     cd ../../
     serverless deploy --stage ${STAGE} --region ${AWS_REGION}
 
+    cd src/cloudfront
+    serverless deploy --stage ${STAGE}
+
 else
     echo "Finish without doing anything"
 fi
