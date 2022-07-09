@@ -4,9 +4,9 @@ export const handler: Handler = async (_event, _context, callback) => {
     try {
         return callback(null, {
             statusCode: 200,
-            body: "Success!!",
+            body: 'Success!!!',
         });
-    } catch (err) {
+    } catch (err: any) {
         console.log('error');
         return callback(err);
     }

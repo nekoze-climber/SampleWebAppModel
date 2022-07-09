@@ -1,10 +1,12 @@
 {
     "env": {
         "es11": true,
-        "node": true
+        "node": true,
+        "browser": true
     },
     "extends": [
         "eslint:recommended",
+        "plugin:react/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "airbnb-typescript",
         //"prettier/@typescript-eslint",
@@ -17,11 +19,31 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2020,
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true,
+            "jsx": true
+         },
         "sourceType": "module",
         "project": "./tsconfig.json"
     },
-    "plugins": ["@typescript-eslint", "prettier", "jest"],
+    "settings": {
+        "import/resolver": {
+          "node": {
+            "paths": ["src"],
+            "extensions": [".js", ".jsx", ".ts", ".tsx"]
+          }
+        }
+      },
+    "plugins": ["@typescript-eslint", "react", "prettier", "jest"],
     "rules": {
+        "@typescript-eslint/explicit-module-boundary-types": 0,
+        "@typescript-eslint/no-explicit-any": 0,
+        "react/jsx-filename-extension": [
+            "error",
+            {
+              "extensions": [".jsx", ".tsx"]
+            }
+        ],
         "no-console": "off",
         "quotes": ["warn", "single"],
         "brace-style": [
